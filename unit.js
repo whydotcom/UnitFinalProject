@@ -10,6 +10,11 @@ const container = document.querySelector(".container");
 
 const pokedexForm = document.getElementById("pokedex-form");
 
+let whichScreen = 1;
+
+displayScreen(1);
+
+
 pokedexForm.addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -83,6 +88,45 @@ async function fetchPokedex (){
     
 }
 
+function displayScreen(value){
+
+    whichScreen = value;
+
+
+    if (whichScreen === 1){
+        const dexScreen1 = document.querySelector(".dex-screen-1");
+        const dexScreen2 = document.querySelector(".dex-screen-2");
+        const dexScreen3 = document.querySelector(".dex-screen-3");
+
+        dexScreen1.style.display = "flex";
+        dexScreen2.style.display = "none";
+        dexScreen3.style.display = "none";
+
+
+    }
+    if (whichScreen === 2){
+        const dexScreen1 = document.querySelector(".dex-screen-1");
+        const dexScreen2 = document.querySelector(".dex-screen-2");
+        const dexScreen3 = document.querySelector(".dex-screen-3");
+
+        dexScreen1.style.display = "none";
+        dexScreen2.style.display = "flex";
+        dexScreen3.style.display = "none";
+
+
+        console.log("hi");
+    }    
+    if (whichScreen === 3){
+        const dexScreen1 = document.querySelector(".dex-screen-1");
+        const dexScreen2 = document.querySelector(".dex-screen-2");
+        const dexScreen3 = document.querySelector(".dex-screen-3");
+
+        dexScreen1.style.display = "none";
+        dexScreen2.style.display = "none";
+        dexScreen3.style.display = "flex";
+    }
+
+}
 
 function renderCard(array, {liveSearch = false} = {}){
     
@@ -252,12 +296,3 @@ function storePC(){
 function recallPC(){
 
 }
-
-search.addEventListener("input", function(e){
-    const input = e.target.value
-
-    if (searchArray.length){
-        //filter through searchArray using input
-        //render
-    }
-})

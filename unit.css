@@ -23,7 +23,7 @@ body {
 
     align-items: center;
     justify-content: center;
-
+    z-index: 1;
 
 }
 
@@ -43,7 +43,9 @@ body {
     border-radius: 50px;
     background-color: rgb(8, 80, 0);
 }
-.dex-screen{
+
+
+.dex-screen-1{
     position: absolute;
     height: 80%;
     width: 90%;
@@ -56,11 +58,93 @@ body {
 
     display: flex;
     flex-direction: column;
+
+    z-index: 1;
 }
+
+
+
+.dex-screen-2{
+    position: absolute;
+    height: 80%;
+    width: 90%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 25px;
+    background-color: rgb(255, 255, 255);
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 1;
+}
+
+.dex-screen-3{
+    position: absolute;
+    height: 80%;
+    width: 90%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 25px;
+    background-color: rgb(255, 255, 255);
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 1;
+}
+
+.dex-screen-nav{
+    flex: 5 1 0;
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.dex-screen-nav span{
+    background-color: black;
+    width: .5rem;
+    height: 3rem;
+}
+
+.dex-nav-link-container{
+    height: 2.5rem;
+    width: 6rem;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-image: linear-gradient(to bottom, #ff0000 50%, #ffffff 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dex-nav-link-container button{
+    height: 1.5rem;
+    width: 4.5rem;
+    text-align: center;
+    background-color: white;
+
+}
+
+#pokedex-form{
+    display: flex;
+    justify-content: center;
+}
+
 #search{
     flex: 5 1 0;
-    width: 100%;
+    margin: 20px;
+    width: 80%;
+    height: 2rem;
+    font-size: 14px;
+    text-align: center;
 }
+
+
 
 .container{
     display: flex;
@@ -80,7 +164,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(255, 227, 227, 0.803);
+    background-color: rgba(255, 251, 227, 0.663);
     width: 90%;
     border: 2px solid rgb(53, 52, 52);
     border-radius: 10px;
@@ -88,6 +172,10 @@ body {
     padding-bottom: 10px;
 
 }
+
+.poke-card button{
+    background-color: white;
+}   
 
 .poke-card p{
     font-size: 12px;
