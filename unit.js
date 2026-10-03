@@ -10,6 +10,8 @@ const container = document.querySelector(".container");
 
 const pokedexForm = document.getElementById("pokedex-form");
 
+const pcForm = document.getElementById("pc-form");
+
 let whichScreen = 1;
 
 displayScreen(1);
@@ -18,7 +20,9 @@ displayScreen(1);
 pokedexForm.addEventListener("submit", function(e) {
     e.preventDefault();
 
-    fetchPokedex();
+    const submittedName = search.value;
+
+    fetchPokedex(submittedName);
 
 })
 
@@ -37,11 +41,16 @@ search.addEventListener("input", function(e) {
     }
 })
 
+pcForm.addEventListener("submit", function(e) {
+    e.preventDefault();
 
 
-async function fetchPokedex (){
+})
 
-    const inputValue = search.value;
+
+async function fetchPokedex (species){
+
+    const inputValue = species;
 
     container.textContent = "Loading Pokedex Entry...";
 
@@ -71,12 +80,7 @@ async function fetchPokedex (){
         
         createAndAddObject(data, data2);
 
-
         renderCard(pokedexArray);
-
-        
-
-        
 
     }catch(error){
        container.textContent = `Could Not Find This ${inputValue}`;
@@ -87,6 +91,34 @@ async function fetchPokedex (){
 
     
 }
+
+async function pcFetch(species){
+    const inputValue = species;
+
+    container.textContent = "Loading Pokedex Entry...";
+
+    try{
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${inputValue}`);
+
+        if (!response.ok){
+            throw new Error("Unable to find pokemon")
+        }
+
+        const data = await response.json();
+
+        const pcSprite = data.sprites.other.dream_world.front_default;
+
+
+    }catch(error){
+       container.textContent = `Could Not Find This ${inputValue}`;
+
+       console.log(error);
+
+    }
+}
+    
+
+
 
 function displayScreen(value){
 
@@ -279,6 +311,33 @@ function createAndAddObject(data, data2){
     searchArray.push(pokedexPokemonObject);
 
     console.log(searchArray);
+}
+
+function takeFormMakeObject(){
+
+    const nameInput = document.querySelector(".pokemon-name").value;
+    const nicknameInput = document.querySelector(".nickname").value;
+    const firstMoveInput = document.querySelector(".move1").value;
+    const secondMoveInput = document.querySelector(".move2").value;
+    const thirdMoveInput = document.querySelector(".move3").value;
+    const fourthMoveInput = document.querySelector(".move4").value;
+
+    const pcPokemonObject = {
+        name: nameInput,
+        nickname: nicknameInput,
+        move1: firstMoveInput,
+        move2: secondMoveInput,
+        move3: thirdMoveInput,
+        move4: fourthMoveInput
+    }
+
+    pcArray.push(pcPokemonObject);
+
+}
+
+function renderPcObject(object){
+ /// this can render a little window for the pc pokemon icons but i need another render funciton that renders the icons and takes
+ /// the pc fetch function information for that puposed.
 }
 
 function storeSearch(){
