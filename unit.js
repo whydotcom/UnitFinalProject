@@ -6,7 +6,9 @@ const pcArray = [];
 
 const search = document.getElementById("search");
 
-const container = document.querySelector(".container");
+const container = document.getElementById("container");
+
+const pcContainer = document.getElementById("pc-container")
 
 const pokedexForm = document.getElementById("pokedex-form");
 
@@ -41,9 +43,22 @@ search.addEventListener("input", function(e) {
     }
 })
 
-pcForm.addEventListener("submit", function(e) {
+pcForm.addEventListener("submit", async function(e) {
     e.preventDefault();
 
+    console.log("X")
+
+    const pcObject =  takeFormMakeObject();
+
+    console.log(pcObject);
+
+    const fetchedData = await pcFetch(pcObject.name);
+
+    const pcSprite = fetchedData.sprites.other.official-artwork.front_default;
+
+    pcObject.sprite = pcSprite;
+
+    renderPcObject(pcObject);
 
 })
 
@@ -78,7 +93,7 @@ async function fetchPokedex (species){
         
         pokedexArray.length = [];
         
-        createAndAddObject(data, data2);
+        pokedexMakeAndAddObject(data, data2);
 
         renderCard(pokedexArray);
 
@@ -95,7 +110,7 @@ async function fetchPokedex (species){
 async function pcFetch(species){
     const inputValue = species;
 
-    container.textContent = "Loading Pokedex Entry...";
+    pcContainer.textContent = "Loading Pokedex Entry...";
 
     try{
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${inputValue}`);
@@ -106,11 +121,11 @@ async function pcFetch(species){
 
         const data = await response.json();
 
-        const pcSprite = data.sprites.other.dream_world.front_default;
+        return data;
 
 
     }catch(error){
-       container.textContent = `Could Not Find This ${inputValue}`;
+       pcContainer.textContent = `Could Not Find This ${inputValue}`;
 
        console.log(error);
 
@@ -146,7 +161,6 @@ function displayScreen(value){
         dexScreen3.style.display = "none";
 
 
-        console.log("hi");
     }    
     if (whichScreen === 3){
         const dexScreen1 = document.querySelector(".dex-screen-1");
@@ -263,7 +277,7 @@ function pokedexVoice(button,text){
     })
 }
 
-function createAndAddObject(data, data2){
+function pokedexMakeAndAddObject(data, data2){
     const pokeName = data.name;
 
     let convertToInches = data.height*3.937;
@@ -293,7 +307,9 @@ function createAndAddObject(data, data2){
 
     const pokeCryUrl = data.cries.latest;
 
-    const pokeEntry = `${data2.flavor_text_entries[1].flavor_text} ` + `${data2.flavor_text_entries[2].flavor_text} ` + `${data2.flavor_text_entries[3].flavor_text} `;
+    const pokeEntry =  fixEntry(data2);
+    
+ 
 
     const pokedexPokemonObject= {
         name: pokeName,
@@ -305,22 +321,18 @@ function createAndAddObject(data, data2){
         entry: pokeEntry
     }
 
-
-
     pokedexArray.push(pokedexPokemonObject)
     searchArray.push(pokedexPokemonObject);
-
-    console.log(searchArray);
 }
 
 function takeFormMakeObject(){
 
-    const nameInput = document.querySelector(".pokemon-name").value;
-    const nicknameInput = document.querySelector(".nickname").value;
-    const firstMoveInput = document.querySelector(".move1").value;
-    const secondMoveInput = document.querySelector(".move2").value;
-    const thirdMoveInput = document.querySelector(".move3").value;
-    const fourthMoveInput = document.querySelector(".move4").value;
+    const nameInput = document.getElementById("pokemon-name").value;
+    const nicknameInput = document.getElementById("nickname").value;
+    const firstMoveInput = document.getElementById("move1").value;
+    const secondMoveInput = document.getElementById("move2").value;
+    const thirdMoveInput = document.getElementById("move3").value;
+    const fourthMoveInput = document.getElementById("move4").value;
 
     const pcPokemonObject = {
         name: nameInput,
@@ -328,16 +340,29 @@ function takeFormMakeObject(){
         move1: firstMoveInput,
         move2: secondMoveInput,
         move3: thirdMoveInput,
-        move4: fourthMoveInput
+        move4: fourthMoveInput,
+        sprite: ""
     }
 
-    pcArray.push(pcPokemonObject);
+    pcArray.unshift(pcPokemonObject);
+
+    return pcPokemonObject;
 
 }
 
 function renderPcObject(object){
- /// this can render a little window for the pc pokemon icons but i need another render funciton that renders the icons and takes
- /// the pc fetch function information for that puposed.
+    const iconBox = document.createElement("div");
+    const icon = document.createElement("img");
+
+    icon.src = object.sprite;
+
+    iconBox.classList.add("pc-icon-box");
+    icon.classList.add("pc-icon");
+
+    pcContainer.appendChild(iconBox);
+    iconBox.appendChild(icon);
+
+
 }
 
 function storeSearch(){
@@ -354,4 +379,39 @@ function storePC(){
 
 function recallPC(){
 
+}
+
+function fixEntry(object){
+    let contentArray = []
+    let correctDescription = ""
+
+    object.flavor_text_entries.forEach(loop => {
+        if (loop.language.name === "en" && loop.language && contentArray.length < 5 ){
+            let entry = loop.flavor_text
+
+            contentArray.push(entry);
+
+
+        }
+
+
+    })
+
+    const noDuplicates = contentArray.filter((item, index, array) => {
+            if (index === array.length-1){
+                return true
+            }
+
+            if (item.slice(0, 10) === array[index+1].slice(0,10)){
+                return false
+            }
+
+            return true;
+    })
+    
+    noDuplicates.forEach(item => {
+        correctDescription += `${item} `
+    })
+
+    return correctDescription;
 }
