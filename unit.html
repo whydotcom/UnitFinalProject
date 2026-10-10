@@ -7,8 +7,9 @@
 
     <link rel="stylesheet" href="unit.css">
 </head>
-<body>
-    
+<body>      
+
+
     <div class="highest-container">
         <div class="background-container-1">
             <span class="dex-bulb-1"></span>
@@ -27,10 +28,13 @@
                         <button class="dex-button-3" onclick="displayScreen(3)">PC</button>
                     </div>
 
-                </div>            
-                <form id="pokedex-form">
-                    <input id="search" placeholder="Who's That Pokemon?" type="search" autocomplete="off">
-                </form>
+                </div>  
+                    <div id="form-container">        
+                        <form id="pokedex-form">
+                            <input id="search" placeholder="Who's That Pokemon?" type="search" autocomplete="off">
+                        </form>
+                    </div>
+                <div id="suggestion-container"></div>  
                 <div id="container"></div>
             </div>
             <div class="dex-screen-2"> 
@@ -64,8 +68,10 @@
 
                     <button type="submit">Submit</button>
                 </form>
-            </div> 
+            </div> git
+           
             <div class="dex-screen-3">
+
                 <div class="dex-screen-nav">
                     <div class="dex-nav-link-container">
                         <button class="dex-button-1" onclick="displayScreen(1)">Pokedex</button>
@@ -79,11 +85,21 @@
                         <button class="dex-button-3" onclick="displayScreen(3)">PC</button>
                     </div>
 
-                    <div id="pc-container"></div>
+
+                </div>
+
+                <div id="pc-container">
+                     <div class="floating"></div>
+                     <div class="floating"></div>
+  
                 </div>
             </div> 
+
         </div>
+
     </div>
+
+
 
     <script src="unit.js"></script>
     
