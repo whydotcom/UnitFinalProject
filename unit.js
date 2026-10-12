@@ -1,10 +1,8 @@
 const pokedexArray = [];
 
-const searchArray = [];
+let searchArray = [];
 
-const pcArray = [];
-
-const ranchArray = [];
+let pcArray = [];
 
 const search = document.getElementById("search");
 
@@ -54,12 +52,8 @@ search.addEventListener("input", function(e) {
     }
 })
 
-
-
 pcForm.addEventListener("submit", async function(e) {
     e.preventDefault();
-
-    console.log("X")
 
     const pcObject =  takeFormMakeObject();
 
@@ -72,6 +66,12 @@ pcForm.addEventListener("submit", async function(e) {
     pcObject.sprite = pcSprite;
 
     renderPcObject(pcObject);
+
+    // added to array here in order to better control animation loop
+    pcArray.unshift(pcObject);
+
+    //saved
+    storeData("pc-array", pcArray);
 
     this.reset();
 
@@ -188,8 +188,6 @@ function displayScreen(value){
         randomStart(pcArray);
 
 
-        ///start the pokemon ranch
-        //randomStart(pcArray);
         if (animating === false){
             animating = true;
             update(pcArray);
@@ -359,6 +357,9 @@ function pokedexMakeAndAddObject(data, data2){
 
     pokedexArray.push(pokedexPokemonObject)
     searchArray.push(pokedexPokemonObject);
+
+    storeData("search-array",searchArray);
+
 }
 
 function takeFormMakeObject(){
@@ -384,20 +385,12 @@ function takeFormMakeObject(){
         speedy: 1
     }
 
-    
 
-    ranchArray.push(pcPokemonObject);
+    //added to pcArray in render function -- could be moved to pcform event listner
 
     return pcPokemonObject;
 
 }
-
-//function createAndPushRanchObject(){
-    const ranchObject = {
-        img:""
-
-    }
-//}
 
 function renderPcObject(object){
     const icon = document.createElement("img");
@@ -409,8 +402,6 @@ function renderPcObject(object){
     icon.classList.add("pc-icon");
   
     pcContainer.appendChild(icon);
-    
-    pcArray.unshift(object);
  
 
 }
@@ -420,11 +411,46 @@ function getRandomDecimal(min, max) {
 
 }
 
-function storeSearch(){
+function storeData(keyName, toBeStored){
+    const stringified = JSON.stringify(toBeStored)
 
+    localStorage.setItem(keyName, stringified);
+
+    console.log(localStorage);
 }
 
-function recallSearch(){
+recallData();
+
+function recallData(){
+    
+
+    if (localStorage.getItem("search-array") != null){
+
+        const recalled = localStorage.getItem("search-array");
+        const restored = JSON.parse(recalled);
+
+        searchArray = restored;
+
+        renderCard(searchArray, {liveSearch : true})
+
+        console.log(pcArray);
+
+    }
+
+    if (localStorage.getItem("pc-array") != null){
+
+        const recalled = localStorage.getItem("pc-array");
+        const restored = JSON.parse(recalled);
+
+        pcArray = restored;
+
+        pcArray.forEach(object => {
+            renderPcObject(object);
+        })
+
+        console.log(pcArray);
+
+    }
 
 }
 
@@ -547,8 +573,6 @@ function randomStart(array){
     console.log(pcArray);
 }
 
-
-
 function update(array) {
 
 
@@ -581,8 +605,6 @@ function update(array) {
 
     
 }
-
-
 
 const pokemonNameArray = [
     { 
