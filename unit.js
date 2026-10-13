@@ -14,15 +14,21 @@ let animating = false;
 
 const suggestionContainer = document.getElementById("suggestion-container");
 
+const pcSuggestionContainer = document.getElementById("pc-suggestion-container");
+
 const pokedexForm = document.getElementById("pokedex-form");
 
 const pcForm = document.getElementById("pc-form");
+
+const pcFormName = document.getElementById("pokemon-name")
 
 let suggestionClickable = false;
 
 let whichScreen = 1;
 
 displayScreen(1);
+
+recallData();
 
 
 pokedexForm.addEventListener("submit", function(e) {
@@ -38,7 +44,7 @@ search.addEventListener("input", function(e) {
 
     let typed = e.target.value;
 
-    didYouMean(typed);
+    didYouMean(typed, suggestionContainer);
 
 
     const liveSearchArray = searchArray.filter(searched => searched.name.toLowerCase().includes(typed));
@@ -52,28 +58,49 @@ search.addEventListener("input", function(e) {
     }
 })
 
+pcFormName.addEventListener("input", function(e) {
+    const typed = e.target.value
+
+    didYouMean(typed, pcSuggestionContainer);
+})
+
 pcForm.addEventListener("submit", async function(e) {
     e.preventDefault();
 
-    const pcObject =  takeFormMakeObject();
+    const nameInput = document.getElementById("pokemon-name").value;
 
-    console.log(pcObject);
+    correctNameCheckArray = pokemonNameArray.filter(pokemon => pokemon.name.toLowerCase().includes(nameInput.toLowerCase()))
 
-    const fetchedData = await pcFetch(pcObject.name);
+    const submissionMessage = document.querySelector(".submission-message-container")
 
-    const pcSprite = fetchedData.sprites.front_default;
+    if (correctNameCheckArray.length > 0){
+        const pcObject =  takeFormMakeObject();
 
-    pcObject.sprite = pcSprite;
+        console.log(pcObject);
 
-    renderPcObject(pcObject);
+        const fetchedData = await pcFetch(pcObject.name);
 
-    // added to array here in order to better control animation loop
-    pcArray.unshift(pcObject);
+        const pcSprite = fetchedData.sprites.front_default;
 
-    //saved
-    storeData("pc-array", pcArray);
+        pcObject.sprite = pcSprite;
 
-    this.reset();
+        renderPcObject(pcObject);
+
+        // added to array here in order to better control animation loop
+        pcArray.unshift(pcObject);
+
+        //saved
+        storeData("pc-array", pcArray);
+
+
+        submissionMessage.textContent = "Thank you for your submission! Click on PC to check on your pokemon!"
+
+        this.reset();
+    }else{
+        submissionMessage.textContent = "Unable to submit. Pokemon species not found!"
+
+        this.reset();
+    }
 
 })
 
@@ -419,7 +446,6 @@ function storeData(keyName, toBeStored){
     console.log(localStorage);
 }
 
-recallData();
 
 function recallData(){
     
@@ -523,20 +549,18 @@ function fixReading(object){
     }
 }
 
-function didYouMean(input){
+function didYouMean(input, container){
     const didYouMeanArray = pokemonNameArray.filter(object => object.name.toLowerCase().includes(input));
-
-    console.log(didYouMeanArray);
 
     if (didYouMeanArray.length != 0 && input.length != 0){
         const suggestionCard = document.createElement("div")
         const title = document.createElement("p")
 
-        suggestionContainer.innerHTML = "";
+        container.innerHTML = "";
 
         title.textContent = "Did you mean:";
 
-        suggestionContainer.appendChild(suggestionCard);
+        container.appendChild(suggestionCard);
         suggestionCard.appendChild(title);
 
 
@@ -544,10 +568,25 @@ function didYouMean(input){
    
             const suggestion = document.createElement("p");
             suggestion.textContent = object.name;
-            suggestion.onclick = () => {
-                fetchPokedex(suggestion.textContent);
-                search.textContent = suggestion.textContent;   
-            };
+
+            //added this for neatness to differentiate which input is using this function
+            if (container == suggestionContainer){
+                suggestion.onclick = () => {
+                    fetchPokedex(suggestion.textContent);
+                    search.value = suggestion.textContent;   
+                };
+            }  else if (container == pcSuggestionContainer){
+                suggestion.onclick = () => {
+
+                //fill out name input
+                pcFormName.value = suggestion.textContent;
+
+                pcSuggestionContainer.innerHTML = "";
+
+                console.log(didYouMeanArray);
+                }
+            } 
+
             suggestionCard.appendChild(suggestion);
 
         })
@@ -555,7 +594,7 @@ function didYouMean(input){
 
 
     } else {
-        suggestionContainer.innerHTML = "";
+        container.innerHTML = "";
     }
 
 }
