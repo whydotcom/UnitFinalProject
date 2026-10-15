@@ -46,10 +46,7 @@ search.addEventListener("input", function(e) {
 
     didYouMean(typed, suggestionContainer);
 
-
     const liveSearchArray = searchArray.filter(searched => searched.name.toLowerCase().includes(typed));
-
-    container.innerHTML = "Pokemon you've searched before:";
 
     renderCard(liveSearchArray, {liveSearch : true});
 
@@ -130,13 +127,13 @@ async function fetchPokedex (species){
 
         const data2 = await response2.json();
 
-        container.textContent = "";
-
         suggestionContainer.textContent = "";
         
         pokedexArray.length = [];
         
         pokedexMakeAndAddObject(data, data2);
+
+        container.innerHTML = "";
 
         renderCard(pokedexArray);
 
@@ -226,6 +223,13 @@ function displayScreen(value){
 
 function renderCard(array, {liveSearch = false} = {}){
     
+    if (liveSearch == true){
+        const searchHistoryTitle = document.createElement("h3");
+        searchHistoryTitle.textContent = "Pokemon you've searched before:";
+        searchHistoryTitle.style.backgroundColor = "white";
+        container.appendChild(searchHistoryTitle);
+    }
+
     array.forEach(loop => {
         const card = document.createElement("div");
         const pImgBox = document.createElement("div");
@@ -383,9 +387,15 @@ function pokedexMakeAndAddObject(data, data2){
     }
 
     pokedexArray.push(pokedexPokemonObject)
-    searchArray.push(pokedexPokemonObject);
 
-    storeData("search-array",searchArray);
+    const duplicatesArray = searchArray.filter(pokemon => pokemon.name.includes(pokedexPokemonObject.name))
+
+
+    //added to avoid duplicate cards in search render
+    if (duplicatesArray.length === 0){    
+        searchArray.push(pokedexPokemonObject);
+        storeData("search-array",searchArray);
+    }
 
 }
 
@@ -560,6 +570,9 @@ function didYouMean(input, container){
 
         title.textContent = "Did you mean:";
 
+        suggestionCard.style.backgroundColor = "white";
+        suggestionCard.style.padding = "8px";
+
         container.appendChild(suggestionCard);
         suggestionCard.appendChild(title);
 
@@ -578,7 +591,7 @@ function didYouMean(input, container){
             }  else if (container == pcSuggestionContainer){
                 suggestion.onclick = () => {
 
-                //fill out name input
+                //fill out name input for pcForm
                 pcFormName.value = suggestion.textContent;
 
                 pcSuggestionContainer.innerHTML = "";
