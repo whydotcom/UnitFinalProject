@@ -1,3 +1,8 @@
+
+
+
+
+
 const pokedexArray = [];
 
 let searchArray = [];
@@ -24,12 +29,19 @@ const pcFormName = document.getElementById("pokemon-name")
 
 let suggestionClickable = false;
 
-let whichScreen = 1;
+let whichScreen = 0;
 
-displayScreen(1);
+let pokeAudio = new Audio("");
+
+displayScreen(0);
 
 recallData();
 
+
+
+pokeAudio.addEventListener("ended", function(e) {
+    pokeAudio = new Audio("")
+})
 
 pokedexForm.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -41,6 +53,7 @@ pokedexForm.addEventListener("submit", function(e) {
 })
 
 search.addEventListener("input", function(e) {
+
 
     let typed = e.target.value;
 
@@ -175,37 +188,62 @@ function displayScreen(value){
     whichScreen = value;
 
 
-    if (whichScreen === 1){
+
+    if (whichScreen === 0){
+        const dexScreen0 = document.querySelector(".dex-screen-0");
         const dexScreen1 = document.querySelector(".dex-screen-1");
         const dexScreen2 = document.querySelector(".dex-screen-2");
         const dexScreen3 = document.querySelector(".dex-screen-3");
 
-        dexScreen1.style.display = "flex";
+        dexScreen0.style.display = "flex";
+        dexScreen1.style.display = "none";
         dexScreen2.style.display = "none";
         dexScreen3.style.display = "none";
 
 
     }
-    if (whichScreen === 2){
+    if (whichScreen === 1){
+        const dexScreen0 = document.querySelector(".dex-screen-0");
         const dexScreen1 = document.querySelector(".dex-screen-1");
         const dexScreen2 = document.querySelector(".dex-screen-2");
         const dexScreen3 = document.querySelector(".dex-screen-3");
 
+        dexScreen0.style.display = "none";
+        dexScreen1.style.display = "flex";
+        dexScreen2.style.display = "none";
+        dexScreen3.style.display = "none";
+
+        playMusic("Pokemon-Center.mp3");
+
+
+    }
+    if (whichScreen === 2){
+        const dexScreen0 = document.querySelector(".dex-screen-0");
+        const dexScreen1 = document.querySelector(".dex-screen-1");
+        const dexScreen2 = document.querySelector(".dex-screen-2");
+        const dexScreen3 = document.querySelector(".dex-screen-3");
+
+        dexScreen0.style.display = "none";
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "flex";
         dexScreen3.style.display = "none";
 
+        playMusic("Lake-Music.mp3");
 
     }    
     if (whichScreen === 3){
+        const dexScreen0 = document.querySelector(".dex-screen-0");
         const dexScreen1 = document.querySelector(".dex-screen-1");
         const dexScreen2 = document.querySelector(".dex-screen-2");
         const dexScreen3 = document.querySelector(".dex-screen-3");
 
+        dexScreen0.style.display = "none";
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "none";
         dexScreen3.style.display = "flex";
 
+
+        playMusic("Eterna-Forest.mp3");
 
         //assigns each one a random start, and it does it now
         //because this is when screen 3 is visible and will have dimensions
@@ -220,6 +258,105 @@ function displayScreen(value){
     }
 
 }
+
+function playMusic(source){
+
+    if (!pokeAudio.paused){
+
+        pokeAudio.pause();
+    }
+
+    pokeAudio = new Audio(source);
+
+    pokeAudio.loop = true;
+
+    pokeAudio.play();
+
+}
+
+function startUpEvent(){
+
+    const textBox = document.createElement("p");
+    const boxContainer = document.querySelector(".dex-screen-0")
+    const buttonContainer = document.createElement("div");
+    const yesButton = document.createElement("button")
+    const noButton = document.createElement("button");
+
+    yesButton.textContent = "Yes"
+    noButton.textContent = "No"
+
+    yesButton.onclick = () => {
+        displayScreen(1);
+    }
+
+    noButton.onclick = () => {
+        window.close();
+    }
+
+    boxContainer.style.display = "flexbox";
+    boxContainer.style.justifyContent = "center";
+    boxContainer.style.alignItems = "center";
+
+    textBox.style.fontSize = "30px"
+
+
+
+    yesButton.style.height = "2rem"
+    yesButton.style.width = "4rem"
+    yesButton.style.fontSize = "16px"
+    yesButton.style.borderRadius = "10px"
+    yesButton.style.backgroundColor = "red"
+    yesButton.style.color = "white"
+    yesButton.addEventListener("mouseenter", () => {
+        yesButton.style.opacity = ".7"
+    })
+    yesButton.addEventListener("mouseleave", () => {
+        yesButton.style.opacity = "1"
+    })
+
+    noButton.style.marginLeft = "10px"
+    noButton.style.height = "2rem"
+    noButton.style.width = "4rem"
+    noButton.style.fontSize = "16px"
+    noButton.style.borderRadius = "10px"
+    noButton.style.backgroundColor = "white"
+    noButton.style.color = "red"
+    noButton.addEventListener("mouseenter", () => {
+        noButton.style.opacity = ".7"
+    })
+    noButton.addEventListener("mouseleave", () => {
+        noButton.style.opacity = "1"
+    })
+
+
+
+    boxContainer.appendChild(textBox);
+    buttonContainer.appendChild(yesButton);
+    buttonContainer.appendChild(noButton);
+    //leave appending the button container till after for loop
+
+    //set up for loop
+    typeWriterWithButtonTiming(textBox,boxContainer,buttonContainer);
+
+
+}
+
+async function typeWriterWithButtonTiming(container,parent,child){
+    const text = "Are you ready for your pokemon adventure?";
+    const speed = 70;
+
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    for (let i=0; i < text.length; i++){
+        container.textContent += text.charAt(i);
+        await delay(speed);
+    }
+    
+    parent.appendChild(child);
+
+}
+
+startUpEvent();
 
 function renderCard(array, {liveSearch = false} = {}){
     
@@ -456,7 +593,6 @@ function storeData(keyName, toBeStored){
     console.log(localStorage);
 }
 
-
 function recallData(){
     
 
@@ -535,11 +671,6 @@ function fixEntry(object){
 
 function fixReading(object){
 
-
-    console.log(object.entry.toLowerCase());
-
-    console.log(object.name);
-
     if (object.entry.toLowerCase().includes(object.name)){
 
         console.log("HI");
@@ -556,6 +687,8 @@ function fixReading(object){
         const newText = eText.replaceAll(eName,nameObject[0].pronounced);
 
         return newText;
+    } else{
+        return object.entry;
     }
 }
 
