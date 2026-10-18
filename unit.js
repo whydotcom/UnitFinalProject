@@ -40,7 +40,19 @@ recallData();
 
 
 pokeAudio.addEventListener("ended", function(e) {
-    pokeAudio = new Audio("")
+    const track1 = "Pokemon-Center.mp3";
+    const track2 = "Lake-Music.mp3";
+    console.log("pff")
+    
+    if (pokeAudio.src.endsWith("Pokemon-Center.mp3")){
+        pokeAudio.src = track2;
+        pokeAudio.loop = false;
+    } else if (pokeAudio.src.endsWith("Lake-Music.mp3")){
+        pokeAudio.src = track1
+        pokeAudio.loop = false;
+    }
+
+    pokeAudio.play();
 })
 
 pokedexForm.addEventListener("submit", function(e) {
@@ -266,9 +278,13 @@ function playMusic(source){
         pokeAudio.pause();
     }
 
-    pokeAudio = new Audio(source);
+    pokeAudio.src = source;
 
-    pokeAudio.loop = true;
+    if (whichScreen === 3){
+        pokeAudio.loop = true;
+    } else {
+        pokeAudio.loop = false
+    }
 
     pokeAudio.play();
 
@@ -605,8 +621,6 @@ function recallData(){
 
         renderCard(searchArray, {liveSearch : true})
 
-        console.log(pcArray);
-
     }
 
     if (localStorage.getItem("pc-array") != null){
@@ -620,18 +634,12 @@ function recallData(){
             renderPcObject(object);
         })
 
-        console.log(pcArray);
-
     }
 
 }
 
-function storePC(){
-
-}
-
-function recallPC(){
-
+function fixWords(){
+    
 }
 
 function fixEntry(object){
