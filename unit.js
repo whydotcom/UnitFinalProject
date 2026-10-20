@@ -198,14 +198,14 @@ function displayScreen(value){
 
     whichScreen = value;
 
+    const dexScreen0 = document.querySelector(".dex-screen-0");
+    const dexScreen1 = document.querySelector(".dex-screen-1");
+    const dexScreen2 = document.querySelector(".dex-screen-2");
+    const dexScreen3 = document.querySelector(".dex-screen-3");
+
 
 
     if (whichScreen === 0){
-        const dexScreen0 = document.querySelector(".dex-screen-0");
-        const dexScreen1 = document.querySelector(".dex-screen-1");
-        const dexScreen2 = document.querySelector(".dex-screen-2");
-        const dexScreen3 = document.querySelector(".dex-screen-3");
-
         dexScreen0.style.display = "flex";
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "none";
@@ -214,36 +214,31 @@ function displayScreen(value){
 
     }
     if (whichScreen === 1){
-        const dexScreen0 = document.querySelector(".dex-screen-0");
-        const dexScreen1 = document.querySelector(".dex-screen-1");
-        const dexScreen2 = document.querySelector(".dex-screen-2");
-        const dexScreen3 = document.querySelector(".dex-screen-3");
-
         dexScreen0.style.display = "none";
         dexScreen1.style.display = "flex";
         dexScreen2.style.display = "none";
         dexScreen3.style.display = "none";
 
+        if (pokeAudio.src.endsWith("Eterna-Forest.mp3")){
+            playMusic("Pokemon-Center.mp3")
+
+        }
+
 
     }
     if (whichScreen === 2){
-        const dexScreen0 = document.querySelector(".dex-screen-0");
-        const dexScreen1 = document.querySelector(".dex-screen-1");
-        const dexScreen2 = document.querySelector(".dex-screen-2");
-        const dexScreen3 = document.querySelector(".dex-screen-3");
-
         dexScreen0.style.display = "none";
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "flex";
         dexScreen3.style.display = "none";
 
+        if (pokeAudio.src.endsWith("Eterna-Forest.mp3")){
+            playMusic("Lake-Music.mp3")
+        }
+
+
     }    
     if (whichScreen === 3){
-        const dexScreen0 = document.querySelector(".dex-screen-0");
-        const dexScreen1 = document.querySelector(".dex-screen-1");
-        const dexScreen2 = document.querySelector(".dex-screen-2");
-        const dexScreen3 = document.querySelector(".dex-screen-3");
-
         dexScreen0.style.display = "none";
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "none";
