@@ -1,8 +1,3 @@
-
-
-
-
-
 const pokedexArray = [];
 
 let searchArray = [];
@@ -37,12 +32,12 @@ displayScreen(0);
 
 recallData();
 
+startUpEvent();
 
 
 pokeAudio.addEventListener("ended", function(e) {
     const track1 = "Pokemon-Center.mp3";
     const track2 = "Lake-Music.mp3";
-    console.log("pff")
     
     if (pokeAudio.src.endsWith("Pokemon-Center.mp3")){
         pokeAudio.src = track2;
@@ -66,17 +61,16 @@ pokedexForm.addEventListener("submit", function(e) {
 
 search.addEventListener("input", function(e) {
 
-
     let typed = e.target.value;
 
     didYouMean(typed, suggestionContainer);
 
-    const liveSearchArray = searchArray.filter(searched => searched.name.toLowerCase().includes(typed));
+    //eliminates duplicates before rendering full array
+    container.innerHTML = "";
 
-    renderCard(liveSearchArray, {liveSearch : true});
-
-    if (liveSearchArray.length === 0){
-        container.innerHTML = "";
+    //checks if theres anything thats been searched to avoid the ghost title
+    if (searchArray.length > 0){
+        renderCard(searchArray, {liveSearch:true});
     }
 })
 
@@ -91,7 +85,8 @@ pcForm.addEventListener("submit", async function(e) {
 
     const nameInput = document.getElementById("pokemon-name").value;
 
-    correctNameCheckArray = pokemonNameArray.filter(pokemon => pokemon.name.toLowerCase().includes(nameInput.toLowerCase()))
+    //makes strict comparison to make sure partial names do not crash app
+    const correctNameCheckArray = pokemonNameArray.filter(pokemon => pokemon.name.toLowerCase() === nameInput.toLowerCase())
 
     const submissionMessage = document.querySelector(".submission-message-container")
 
@@ -101,23 +96,28 @@ pcForm.addEventListener("submit", async function(e) {
         console.log(pcObject);
 
         const fetchedData = await pcFetch(pcObject.name);
+        
+        if (fetchedData){
+            const pcSprite = fetchedData.sprites.front_default;
 
-        const pcSprite = fetchedData.sprites.front_default;
+            pcObject.sprite = pcSprite;
 
-        pcObject.sprite = pcSprite;
+            renderPcObject(pcObject);
 
-        renderPcObject(pcObject);
+            // added to array here in order to better control animation loop
+            pcArray.unshift(pcObject);
 
-        // added to array here in order to better control animation loop
-        pcArray.unshift(pcObject);
-
-        //saved
-        storeData("pc-array", pcArray);
+            //saved
+            storeData("pc-array", pcArray);
 
 
-        submissionMessage.textContent = "Thank you for your submission! Click on PC to check on your pokemon!"
+            submissionMessage.textContent = "Thank you for your submission! Click on PC to check on your pokemon!"
 
-        this.reset();
+            this.reset();
+        }else {
+            submissionMessage.textContent = "Oops! Something went wrong! Double check the pokemon name and try again!"
+            this.reset();
+        }
     }else{
         submissionMessage.textContent = "Unable to submit. Pokemon species not found!"
 
@@ -189,7 +189,6 @@ async function pcFetch(species){
 
     }catch(error){
 
-
        console.log(error);
 
     }
@@ -225,8 +224,6 @@ function displayScreen(value){
         dexScreen2.style.display = "none";
         dexScreen3.style.display = "none";
 
-        playMusic("Pokemon-Center.mp3");
-
 
     }
     if (whichScreen === 2){
@@ -239,8 +236,6 @@ function displayScreen(value){
         dexScreen1.style.display = "none";
         dexScreen2.style.display = "flex";
         dexScreen3.style.display = "none";
-
-        playMusic("Lake-Music.mp3");
 
     }    
     if (whichScreen === 3){
@@ -276,6 +271,7 @@ function playMusic(source){
     if (!pokeAudio.paused){
 
         pokeAudio.pause();
+
     }
 
     pokeAudio.src = source;
@@ -303,7 +299,11 @@ function startUpEvent(){
 
     yesButton.onclick = () => {
         displayScreen(1);
+        playMusic("Pokemon-Center.mp3");
     }
+
+
+
 
     noButton.onclick = () => {
         window.close();
@@ -329,6 +329,7 @@ function startUpEvent(){
     yesButton.addEventListener("mouseleave", () => {
         yesButton.style.opacity = "1"
     })
+
 
     noButton.style.marginLeft = "10px"
     noButton.style.height = "2rem"
@@ -371,8 +372,6 @@ async function typeWriterWithButtonTiming(container,parent,child){
     parent.appendChild(child);
 
 }
-
-startUpEvent();
 
 function renderCard(array, {liveSearch = false} = {}){
     
@@ -467,36 +466,65 @@ function renderCard(array, {liveSearch = false} = {}){
 
 function pokemonCryEffect(button,url){
     button.addEventListener("click", function(e) {
-        const cry = new Audio(url);
-    
-        cry.volume = 0.5;
 
-        cry.play()
+        if (!pokeAudio.paused){
+
+            pokeAudio.pause();
+
+
+            const cry = new Audio(url);
+        
+            cry.volume = 0.5;
+
+            cry.play()
             .then(() => console.log("playing cry!"))
             .catch(error => console.error("Playback blocked or failed:", error));
+            
+            cry.addEventListener("ended", function(e) {
+                setTimeout(() => {
+                    pokeAudio.play()
+                }, 1000);
+            })
+
+        }
+
+
     })
 }
 
 function pokedexVoice(button,object){
-
-
-
     button.addEventListener("click", () => {
 
-        const correctedText = fixReading(object);
+        if (!pokeAudio.paused){
 
-        console.log(correctedText);
+            pokeAudio.pause();
 
-        const utterance = new SpeechSynthesisUtterance(correctedText); 
-        utterance.rate = 1.0; 
-        utterance.pitch = 1.02; 
-        utterance.volume = 1.0; 
-        window.speechSynthesis.speak(utterance);
+            const correctedText = fixReading(object);
+
+            console.log(correctedText);
+    
+            const utterance = new SpeechSynthesisUtterance(correctedText); 
+            utterance.rate = 1.0; 
+            utterance.pitch = 1.02; 
+            utterance.volume = 1.0; 
+            window.speechSynthesis.speak(utterance);
+    
+            
+            utterance.addEventListener("end", function(e) {
+                setTimeout(() => {
+                    pokeAudio.play()
+                }, 2000);
+            })
+
+        }
+
+
+
     })
 }
 
 function pokedexMakeAndAddObject(data, data2){
-    const pokeName = data.name;
+    const pokeName = fixWord(data.name);
 
     let convertToInches = data.height*3.937;
     let roundDownConversionInFeet = Math.floor(convertToInches/12);
@@ -638,7 +666,10 @@ function recallData(){
 
 }
 
-function fixWords(){
+function fixWord(word){
+    const firstLetterCap = word.slice(0,1).toUpperCase();
+    const corrected = firstLetterCap + word.slice(1);
+    return corrected;
     
 }
 
@@ -679,7 +710,7 @@ function fixEntry(object){
 
 function fixReading(object){
 
-    if (object.entry.toLowerCase().includes(object.name)){
+    if (object.entry.toLowerCase().includes(object.name.toLowerCase())){
 
         console.log("HI");
 
@@ -701,7 +732,7 @@ function fixReading(object){
 }
 
 function didYouMean(input, container){
-    const didYouMeanArray = pokemonNameArray.filter(object => object.name.toLowerCase().includes(input));
+    const didYouMeanArray = pokemonNameArray.filter(object => object.name.toLowerCase().includes(input.toLowerCase()));
 
     if (didYouMeanArray.length != 0 && input.length != 0){
         const suggestionCard = document.createElement("div")
